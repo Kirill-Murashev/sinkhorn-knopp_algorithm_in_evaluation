@@ -1,0 +1,87 @@
+\documentclass[12pt]{scrartcl}
+
+% Font and input encoding
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX,Renderer=Basic}
+\usepackage{polyglossia}
+\setmainlanguage{russian}
+\setotherlanguage{english}
+
+% Explicitly setting fonts that support Cyrillic
+\setmainfont{CMU Serif}
+\setsansfont{CMU Sans Serif}
+\setmonofont{CMU Typewriter Text}
+
+% For math symbols
+% Include AMS packages for mathematical symbols and fonts
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% For code listings
+\usepackage{listings}
+
+% For tables
+\usepackage{tabularx}
+\usepackage{placeins}
+
+% For drawing
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{pgfplotstable}
+\usetikzlibrary{pgfplots.statistics}
+\usetikzlibrary{pgfplots.groupplots} % Load the groupplots library
+
+% For files reading
+\usepackage{filecontents}
+
+
+% Bibliography management (optional in presentation, often omitted)
+\usepackage[backend=biber]{biblatex}
+\addbibresource{references.bib} % Specify your bibliography file here
+
+% For clickable links (often less necessary in presentations)
+\usepackage{hyperref}
+
+% Settings for links (optional in presentations)
+\hypersetup{
+	colorlinks=true,
+	linkcolor=red,
+	filecolor=magenta,
+	urlcolor=cyan,
+}
+
+% Document metadata
+\title{Практическое применение метода балансировки матриц Брэгмана в варианте алгоритма Синкхорна\,--\,Кноппа для риск-ориентированной оценки страховой стоимости объектов недвижимости}
+\subtitle{\foreignlanguage{english}{Practical application of the Bregman matrix balancing method in a variant of the Sinckhorn-Knopp algorithm for risk-oriented estimation of insurance value of real estate objects}}
+
+% Define authors
+\author{К.\,А.~Мурашев\thanks{email: kirill.murashev@gmail.com, \href{https://t.me/AIinValuation}{Telegram}}}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Точная оценка стоимости здания имеет решающее значение для страховых сделок, позволяя сбалансировать сбор премии и риск для страховщиков, а также обеспечить соблюдение нормативных требований. Использование затратного подхода для определения страховой стоимости на основе восстановительной самом по себе не представляет какую-либо сложность. Однако оно может приводить к завышению стоимости, что может дать возможность для совершения страхового мошенничества или непреднамеренного завышения стоимости. Это несоответствие возникает из-за неразрывной связи земли и здания в сделках с недвижимостью, что затрудняет определение истинной справедливой стоимости одного здания. Точный учёт функционального устаревания и внешнего обесценения в рамках затратного подхода весьма затруднён без внешних рыночных данных, получение которых чаще всего крайне затруднено. Существующие решения, такие как типовые предельные значения, лишены гибкости и могут привести к недоплате страховых взносов или чрезмерному принятию риска. Для решения этих проблем в данной работе предлагается новый способ, сочетающий сравнительный подход для оценки единого объекта недвижимости, а также затратный подход для определения восстановительной стоимости с методом балансировки матриц Брэгмана в реализации посредством алгоритма Синхорна-Кноппа. Используя рыночные данные о совокупной стоимости земли и здания, а также оценку стоимости здания на основе затрат, возможно получить справедливый верхний предел страховой стоимости. Приведённый практический пример демонстрирует вычислительную эффективность и простоту этого способа, показывая его потенциал для повышения точности, предотвращения мошенничества и обеспечения справедливости в процессе оценки страховой стоимости.
+
+
+\bigskip
+\textenglish{Accurate assessment of building value is crucial for insurance transactions, balancing premium collection and risk for insurers, while ensuring regulatory compliance. While the cost approach is commonly used for valuation, it may underestimate market value, leading to potential fraud or unintentional overvaluation. This discrepancy arises from the inherent inseparability of land and building in real estate transactions, making it challenging to isolate the building's true market value. Furthermore, accurately accounting for functional obsolescence and external impairment within the cost approach can be difficult without external market insights, potentially exploited for fraudulent overvaluation. Current solutions, like typical limit values, lack flexibility and can result in underpayment of premiums or excessive risk acceptance. To address these issues, this paper proposes a novel method combining the market approach for valuing a single real estate object and the cost approach for determining the replacement value with the Bragman matrix balancing method as implemented through the Synhorn-Knopp algorithm. By leveraging market data on combined land and building values, along with cost-based building value estimates, we derive a fair insurance value ceiling, mitigating both undervaluation and overvaluation risks. A practical case study demonstrates the implementation and effectiveness of this method, showcasing its potential to enhance accuracy, deter fraud, and promote fairness in the insurance valuation process.}
+
+\end{abstract}
+
+\section{Введение}\label{sec:Introduction}
+В соответствии с п.~2
+
+
+Точная оценка стоимости принимаемого на страхование здания имеет большое значение для обеих сторон сделки по страхованию. При этом, с точки зрения страховой компании, также важно соблюсти баланс между выгодой от собираемой премии и потенциальным риском наступления страхового события. Отдельный вопрос заключается в обоснованности определения страховой стоимости недвижимого имущества с точки зрения регулятора. Хотя сам расчёт страховой стоимости методами затратного не представляет серьёзную проблему, существует риск принятия имущества по страховой стоимости, превышающей его справедливую стоимость. Важное обстоятельство заключается в том, что сами по себе здания в отрыве от земли не являются объектами оборота, вследствие чего не имеют отдельную именно рыночную стоимость. Вместо этого можно говорить о вкладе земли и здания в стоимость единого объекта недвижимости (ЕОН). При этом, стоимость ЕОН не является суммой стоимостей земли и здания. Напротив, можно говорить лишь о рыночной стоимости ЕОН и стоимости вклада {\foreignlanguage{english}{contribution value}} для компонент ЕОН. С точки зрения страхования, это означает, что, в случае определения страховой стоимости на основе восстановительной, определяемой методами затратного подхода, существует риск принятия объекта по завышенной стоимости, не отражающей его реальную ценность в условиях существующей рыночной конъюнктуры. Сам по себе затратный подход теоретически вполне способен учитывать подобные нюансы через механизмы учёта функционального устаревания и внешнего обесценения. Однако на практике, корректное определение величин данных параметров является сложной задачей. К тому же нереализуемой без внешней информации об этих величинах. Поскольку владелец объекта лучше страховщика знает конъюнктуру рынка, к которому относится принадлежащий ему ЕОН, в ряде случаев может иметь место попытка мошенничества, заключающая в выведении средств из физического актива путём его страхования и дальнейшей плановой гибели с последующим получением страхового возмещения, превышающего справедливую стоимость актива. Сложность проактивного определения данного вида фрода заключается в том, что определение восстановительной стоимости может быть выполнено вполне корректно. Суть данной схемы заключается в отсутствии возможности достаточной точного анализа конъюнктуры рынка с целью учёта функционального устаревания и внешнего обесценения. Кроме того, подобное принятие объекта на страхование по завышенной цене может иметь место и в отсутствие фрода. Естественно, данная проблема известна специалистам отрасли. Однако для её решения довольно часто используются весьма ``массовые'' решения вроде типовых предельных значений страховой стоимости по типам объектов в конкретном регионе. Их недостаток заключается в отсутствии достаточной гибкости, которая в каждом конкретном случае может привести как к недобору премии (а также снижению лояльности клиента), так и к принятию избыточного риска (в т.\,ч. риска санкций со стороны регулятора). В данной работе предлагается новый способ, сочетающий затратный подход с методом балансировки матриц Брегмана (алгоритм Синкхорна-Кноппа) для решения этих проблем. В основе предлагаемого способа лежат рыночные данные о совокупной стоимости земли и здания для большой группы объектов недвижимости, а также оценки восстановительной стоимости зданий на основе затрат и физического износа. Применяя алгоритм Брегмана-Синхорна-Кноппа, можно получить справедливый потолок страховой стоимости. Предлагаемый практический пример демонстрирует лёгкость реализации и эффективность данного метода. Данный инновационный способ может повысить точность оценки, предотвратить мошенничество, способствовать справедливости в процессе страховой оценки, обеспечить максимизацию экономической эффективности деятельности страховой компании и снизить её риски.
+
+
+
+
+
+\printbibliography
+
+\end{document}
