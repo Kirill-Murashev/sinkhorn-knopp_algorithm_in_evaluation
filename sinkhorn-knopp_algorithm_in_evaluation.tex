@@ -60,7 +60,7 @@
 \subtitle{\foreignlanguage{english}{Practical application of the Bregman matrix balancing method in a variant of the Sinkhorn-Knopp algorithm for risk-oriented estimation of insurance value of real estate objects}}
 
 % Define authors
-\author{К.\,А.~Мурашев\thanks{email: kirill.murashev@gmail.com, \href{https://t.me/AIinValuation}{Telegram}, директор ООО ``Совконсалт'', член Комитета по Научным и Методическим Вопросам Оценочной Деятельности Национального Объединения СРО Оценщиков ``Союз СОО''}}
+\author{К.\,А.~Мурашев\thanks{email: kirill.murashev@gmail.com; \href{https://t.me/AIinValuation}{Telegram}; Sovconsult DOO, Founder}}
 
 \date{\today}
 
@@ -275,7 +275,6 @@
     \item $D_\phi(2, 1 ) = (2)2 − 1 − 2(1)(2 − 1) = 4 − 1 − 2 = 1.00$
 \end{itemize}
 
-
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{non-neg.pdf} % Adjust width as needed
@@ -283,12 +282,11 @@
     \label{fig:non-neg}
 \end{figure}
 
-\paragraph{Инвариантность к добавлению аффинной функции}\label{par:affine_difference}
+\paragraph{Инвариантность к добавлению аффинного члена}\label{par:affine_difference}
 \begin{equation}
     D_\psi (p,q) = D_\phi(p,q) \Longleftrightarrow \psi(x) = \phi (x) \langle a, x \rangle + b, \text{where}\ a \in \mathbb{R}^n \wedge \ b \in \mathbb{R}
 \end{equation}
-Дивергенция Брэгмана остаётся неизменной, если порождающая функция $\phi$ модифицируется путём добавления аффинного члена. Это свойство подчёркивает внутреннюю природу дивергенции, не зависящую от линейных сдвигов или постоянных смещений~\cite{Harremoes2017}. Иными словами, дивергенция Брэгмана инвариантна при добавлении аффинной функции к выпуклой функции. Рассмотрим рисунок~\ref{fig:affinity} на странице~\pageref{fig:affinity}.
-
+Дивергенция Брэгмана остаётся неизменной, если порождающая функция $\phi$ модифицируется путём добавления аффинного члена. Это свойство подчёркивает внутреннюю природу дивергенции, не зависящую от линейных сдвигов или постоянных смещений~\cite{Harremoes2017}. Иными словами, дивергенция Брэгмана инвариантна при добавлении аффинного  члена к выпуклой функции. Рассмотрим рисунок~\ref{fig:affinity} на странице~\pageref{fig:affinity}.
 
 \begin{figure}[h]
     \centering
@@ -297,19 +295,543 @@
     \label{fig:affinity}
 \end{figure}
 
-\paragraph{Выпуклость} $D_\phi(p,q)$ является выпуклой по первому аргументу p, но не обязательно по второму аргументу q~\cite{Nielsen2017}. Это свойство выпуклости очень важно для алгоритмов оптимизации, поскольку оно обеспечивает существование единственного минимума при минимизации расхождения относительно первого аргумента~\cite{Frigyik2008a}.
+Существует выпуклая функция $\phi(x)$. Определим новую функцию $\tilde{\phi}(x)$ следующим образом:
+\begin{equation}\label{eq:basic+affine}
+    \tilde{\phi}(x) = \phi(x) + a^{\top}x + b,
+\end{equation}
+где $a$ --- вектор либо либо одномерный скаляр, а $b$ --- скаляр.
+
+Для выпуклой дифференцируемой функции $\phi$, дивергенция Брэгмана между точками $x$ и $c$ определяется как
+\begin{equation}\label{eq:basic_function}
+    D_\phi (x,c) = \phi (x) - \phi (c) - \nabla \phi (c)^{\top} (x - c)
+\end{equation}
+Также определим аффинную функцию:
+\begin{equation}\label{eq:affine_term}
+    a(x) = a^{\top} x + b,
+\end{equation}
+где: где $a$ --- вектор либо либо одномерный скаляр, а $b$ --- скаляр.
+
+Взяв функцию~\ref{eq:basic_function} и добавив к ней аффинный член~\ref{eq:affine_term}, получим функцию~\ref{eq:basic+affine}. В этом случае, при замене $\phi (x)$ на $\tilde{\phi}(x)$, значение дивергенции не изменяется т.е.,
+\begin{equation}\label{eq:affine_invariance}
+    D_{\tilde{\phi}}(x,c) = D_{\phi}(x,c)
+\end{equation}
+Докажем утверждение~\ref{eq:affine_invariance}:
+\begin{align*}
+    D_{\tilde{\phi}}(x, c) &= \tilde{\phi}(x) - \tilde{\phi}(c) - \nabla \tilde{\phi}(c)^\top (x - c) \\
+    &= [\phi(x) + a^\top x + b] - [\phi(c) + a^\top c + b] - [\nabla \phi(c) + a]^\top (x - c) \\
+    &= [\phi(x) - \phi(c) - \nabla \phi(c)^\top (x - c)] + [a^\top x - a^\top c - a^\top(x - c)] \\
+    &= D_{\phi}(x, c) + [a^\top x - a^\top c - a^\top x + a^\top c] \\
+    &= D_{\phi}(x, c) + [0] \\
+    &= D_{\phi}(x, c)
+\end{align*}
+Аффинные члены сокращаются, поэтому дивергенция Брэгмана остаётся прежней. Обратимся к рисунку~\ref{fig:affinity}.
+\begin{enumerate}
+    \item Как и в предыдущем случае, определим выпуклую функцию $\phi(x) = x^{2}$.
+    \item Определим аффинную функцию $a(x) = m(x + b)$, произвольно выбирая значения параметров $m$ и $b$, например $m = 2, b = -1$.
+    \item Определим функцию $\tilde{\phi}(x)$ путём добавления аффинного члена к ранее определённой функции $\phi(x)$:
+    \begin{align*}
+        \tilde{\phi}(x) = \phi(x) + a(x) \\
+        \tilde{\phi}(x) = x^{2} + 2x - 1
+    \end{align*}
+    \item Вычислим производные:
+    \begin{align*}
+        \phi'(x) = 2x\\
+        \tilde{\phi}' = 2x + 2
+    \end{align*}
+    \item Выберем значения $c = 1$ и $x_{1} = -1, x_{2} = 0.5, x_{3} = 1.5, x_{4} = 2$.
+    \item Таким образом, мы имеем:
+    \begin{itemize}
+        \item оригинальная выпуклая функция: $\phi (x) = x ^{2}$;
+        \item её производная: $\phi ' (x) = 2x$;
+        \item аффинная функция: $a^\top x + b = 2x -1$;
+        \item модифицированная выпуклая функция с добавлением аффинного члена: $\tilde{\phi}(x) = \phi(x) + a^\top x + b = x^{2} +2x -1$;
+        \item её производная: $\tilde{\phi}'(x) = \phi ' (x) + 2 = 2x + 2 $;
+        \item рассматриваемая точка: $c = 1$;
+        \item точки для примера: $x_{1} = -1, x_{2} = 0.5, x_{3} = 1.5, x_{4} = 2$.
+    \end{itemize}
+    \item Рассчитаем значения тангенсов.
+    \begin{itemize}
+        \item Рассчитаем тангенс в $x = c = 1$:
+        \begin{itemize}
+            \item для $\phi(x)$:
+            \begin{align*}
+                % Compute \phi(c)
+                \phi(1) &= (1)^2 = 1 \\
+                % Compute \phi'(c)
+                \phi'(1) &= 2 \cdot 1 = 2 \\
+                % Equation of the Tangent Line at x = 1
+                T_{\phi}(x) &= \phi(1) + \phi'(1)(x - 1) = 1 + 2(x - 1)
+            \end{align*}
+            \item для $\tilde{\phi}(x)$:
+            \begin{align*}
+                % Compute \tilde{\phi}(c)
+                \tilde{\phi}(1) & = (1)^2 + 2 \cdot 1 - 1 = 1 + 2 - 1 = 2 \\
+                % Compute \tilde{\phi}'(c)
+                \tilde{\phi}'(1) &= 2 \cdot 1 + 2 = 2 + 2 = 4 \\
+                % Equation of the Tangent Line at x = 1
+                T_{\tilde{\phi}}(x) &= \tilde{\phi}(1) + \tilde{\phi}'(1)(x - 1) = 2 + 4(x - 1)
+            \end{align*}
+        \end{itemize}
+        \item Рассчитаем тангенс в $x_{1} = -1$:
+        \begin{itemize}
+            \item для $\phi(x)$:
+            \begin{align*}
+                % Compute \phi(-1)
+                \phi(-1) &= (-1)^2 = 1 \\
+                % Compute \phi'(-1)
+                \phi'(-1) &= 2 \cdot (-1) = -2 \\
+                % Equation of the Tangent Line at x = -1
+                T_{\phi}^{(1)}(x) &= \phi(-1) + \phi'(-1)(x - (-1)) = 1 - 2(x + 1) \\
+                % Simplify
+                T_{\phi}^{(1)}(x) &= -2x - 1
+            \end{align*}
+            \item для $\tilde{\phi}(x)$:
+            \begin{align*}
+                % Compute \tilde{\phi}(-1)
+                \tilde{\phi}(-1) &= (-1)^2 + 2 \cdot (-1) - 1 = 1 - 2 - 1 = -2 \\
+                % Compute \tilde{\phi}'(-1) \\
+                \tilde{\phi}'(-1) &= 2 \cdot (-1) + 2 = -2 + 2 = 0 \\
+                % Equation of the Tangent Line at x = -1
+                T_{\tilde{\phi}}^{(1)}(x) &= \tilde{\phi}(-1) + \tilde{\phi}'(-1)(x - (-1)) = -2 + 0 \cdot (x + 1) \\
+                % Simplify
+                T_{\tilde{\phi}}^{(1)}(x) &= -2
+            \end{align*}
+        \end{itemize}
+        \item Рассчитаем тангенс в $x_{2} = 0.5$:
+        \begin{itemize}
+            \item для $\phi(x)$:
+            \begin{align*}
+                % Compute \phi(0.5)
+                \phi(0.5) &= (0.5)^2 = 0.25 \\
+                % Compute \phi'(0.5)
+                \phi'(0.5) &= 2 \cdot 0.5 = 1 \\
+                % Equation of the Tangent Line at x = 0.5
+                T_{\phi}^{(2)}(x) &= \phi(0.5) + \phi'(0.5)(x - 0.5) = 0.25 + 1(x - 0.5)
+            \end{align*}
+            \item для $\tilde{\phi}(x)$:
+            \begin{align*}
+                % Compute \tilde{\phi}(0.5)
+                \tilde{\phi}(0.5) &= (0.5)^2 + 2 \cdot 0.5 - 1 = 0.25 + 1 - 1 = 0.25 \\
+                % Compute \tilde{\phi}'(0.5)
+                \tilde{\phi}'(0.5) &= 2 \cdot 0.5 + 2 = 1 + 2 = 3 \\
+                % Equation of the Tangent Line at x = 0.5
+                T_{\tilde{\phi}}^{(2)}(x) &= \tilde{\phi}(0.5) + \tilde{\phi}'(0.5)(x - 0.5) = 0.25 + 3(x - 0.5)
+            \end{align*}
+        \end{itemize}
+        \item Рассчитаем тангенс в $x_{3} = 1.5$:
+        \begin{itemize}
+            \item для $\phi(x)$:
+            \begin{align*}
+                %% Compute \phi(1.5)
+                \phi(1.5) &= (1.5)^2 = 2.25 \\
+                % Compute \phi'(1.5)
+                \phi'(1.5) &= 2 \cdot 1.5 = 3 \\
+                % Equation of the Tangent Line at x = 1.5
+                T_{\phi}^{(3)}(x) &= \phi(1.5) + \phi'(1.5)(x - 1.5) = 2.25 + 3(x - 1.5)
+            \end{align*}
+            \item для $\tilde{\phi}(x)$:
+            \begin{align*}
+                % Compute \tilde{\phi}(1.5)
+                \tilde{\phi}(1.5) &= (1.5)^2 + 2 \cdot 1.5 - 1 = 2.25 + 3 - 1 = 4.25 \\
+                % Compute \tilde{\phi}'(1.5)
+                \tilde{\phi}'(1.5) &= 2 \cdot 1.5 + 2 = 3 + 2 = 5 \\
+                % Equation of the Tangent Line at x = 1.5
+                T_{\tilde{\phi}}^{(3)}(x) &= \tilde{\phi}(1.5) + \tilde{\phi}'(1.5)(x - 1.5) = 4.25 + 5(x - 1.5)
+            \end{align*}
+        \end{itemize}
+        \item Рассчитаем тангенс в $x_{4} = 2$:
+        \begin{itemize}
+            \item для $\phi(x)$:
+            \begin{align*}
+                % Compute \phi(2)
+                \phi(2) &= (2)^2 = 4 \\
+                % Compute \phi'(2)
+                \phi'(2) &= 2 \cdot 2 = 4 \\
+                % Equation of the Tangent Line at x = 2
+                T_{\phi}^{(4)}(x) &= \phi(2) + \phi'(2)(x - 2) = 4 + 4(x - 2)
+            \end{align*}
+            \item для $\tilde{\phi}(x)$:
+            \begin{align*}
+                % Compute \tilde{\phi}(2)
+                \tilde{\phi}(2) &= (2)^2 + 2 \cdot 2 - 1 = 4 + 4 - 1 = 7 \\
+                % Compute \tilde{\phi}'(2)
+                \tilde{\phi}'(2) &= 2 \cdot 2 + 2 = 4 + 2 = 6 \\
+                % Equation of the Tangent Line at x = 2
+                T_{\tilde{\phi}}^{(4)}(x) &= \tilde{\phi}(2) + \tilde{\phi}'(2)(x - 2) = 7 + 6(x - 2)
+            \end{align*}
+        \end{itemize}
+    \end{itemize}
+    \item Рассчитаем значения дивергенций:
+    \begin{itemize}
+        \item $x = c = 1$:
+        \begin{itemize}
+            \item для $\phi(x)$:
+            \begin{align*}
+                D_{\phi}(1, 1) &= \phi(1) - \phi(1) - \phi'(1)(1 - 1) \\
+                &= 1 - 1 - 2 \cdot 1 \cdot 0 \\
+                &= 0
+            \end{align*}
+            \item для $\tilde{\phi}$:
+            \begin{align*}
+                D_{\tilde{\phi}}(1, 1) &= \tilde{\phi}(1) - \tilde{\phi}(1) - \tilde{\phi}'(1)(1 - 1) \\
+                &= 2 - 2 - 4 \cdot 0 \\
+                &= 0
+            \end{align*}
+        \end{itemize}
+        \item $x_{1} = -1$
+        \begin{itemize}
+            \item для $\phi(x)$:
+            \begin{align*}
+                \phi(-1) &= (-1)^2 = 1, \quad \phi(1) = (1)^2 = 1 \\
+                \phi'(1) &= 2 \cdot 1 = 2 \\
+                D_{\phi}(-1, 1) &= \phi(-1) - \phi(1) - \phi'(1)(-1 - 1) \\
+                &= 1 - 1 - 2(-2) \\
+                &= 0 - (-4) \\
+                &= 4
+            \end{align*}
+            \item для $\tilde{\phi}$:
+            \begin{align*}
+                \tilde{\phi}(-1) &= (-1)^2 + 2(-1) - 1 = -2, \quad \tilde{\phi}(1) = 2 \\
+                \tilde{\phi}'(1) &= 2 \cdot 1 + 2 = 4 \\
+                D_{\tilde{\phi}}(-1, 1) &= \tilde{\phi}(-1) - \tilde{\phi}(1) - \tilde{\phi}'(1)(-1 - 1) \\
+                &= -2 - 2 - 4(-2) \\
+                &= -4 - (-8) \\
+                &= -4 + 8 \\
+                &= 4
+            \end{align*}
+        \end{itemize}
+        \item $x_{2} = 0.5$:
+        \begin{itemize}
+            \item для $\phi(x)$:
+            \begin{align*}
+                \phi(0.5) &= (0.5)^2 = 0.25, \quad \phi(1) = 1 \\
+                \phi'(1) &= 2 \cdot 1 = 2 \\
+                D_{\phi}(0.5, 1) &= \phi(0.5) - \phi(1) - \phi'(1)(0.5 - 1) \\
+                &= 0.25 - 1 - 2(-0.5) \\
+                &= -0.75 - (-1) \\
+                &= -0.75 + 1 \\
+                &= 0.25
+            \end{align*}
+            \item для $\tilde{\phi}$:
+            \begin{align*}
+                \tilde{\phi}(0.5) &= (0.5)^2 + 2(0.5) - 1 = 0.25, \quad \tilde{\phi}(1) = 2 \\
+                \tilde{\phi}'(1) &= 2 \cdot 1 + 2 = 4 \\
+                D_{\tilde{\phi}}(0.5, 1) &= \tilde{\phi}(0.5) - \tilde{\phi}(1) - \tilde{\phi}'(1)(0.5 - 1) \\
+                &= 0.25 - 2 - 4(-0.5) \\
+                &= -1.75 - (-2) \\
+                &= -1.75 + 2 \\
+                &= 0.25
+            \end{align*}
+        \end{itemize}
+        \item $x_{3} = 1.5 $:
+        \begin{itemize}
+            \item для $\phi(x)$:
+            \begin{align*}
+                \phi(1.5) &= (1.5)^2 = 2.25, \quad \phi(1) = 1 \\
+                \phi'(1) &= 2 \cdot 1 = 2 \\
+                D_{\phi}(1.5, 1) &= \phi(1.5) - \phi(1) - \phi'(1)(1.5 - 1) \\
+                &= 2.25 - 1 - 2(0.5) \\
+                &= 1.25 - 1 \\
+                &= 0.25
+            \end{align*}
+            \item для $\tilde{\phi}$:
+            \begin{align*}
+                \tilde{\phi}(1.5) &= (1.5)^2 + 2(1.5) - 1 = 4.25, \quad \tilde{\phi}(1) = 2 \\
+                \tilde{\phi}'(1) &= 2 \cdot 1 + 2 = 4 \\
+                D_{\tilde{\phi}}(1.5, 1) &= \tilde{\phi}(1.5) - \tilde{\phi}(1) - \tilde{\phi}'(1)(1.5 - 1) \\
+                &= 4.25 - 2 - 4(0.5) \\
+                &= 2.25 - 2 \\
+                &= 0.25
+            \end{align*}
+        \end{itemize}
+        \item $x_{4} = 2 $:
+        \begin{itemize}
+            \item для $\phi(x)$:
+            \begin{align*}
+                \phi(2) &= (2)^2 = 4, \quad \phi(1) = 1 \\
+                \phi'(1) &= 2 \cdot 1 = 2 \\
+                D_{\phi}(2, 1) &= \phi(2) - \phi(1) - \phi'(1)(2 - 1) \\
+                &= 4 - 1 - 2(1) \\
+                &= 3 - 2 \\
+                &= 1
+            \end{align*}
+            \item для $\tilde{\phi}$:
+            \begin{align*}
+                \tilde{\phi}(2) &= (2)^2 + 2(2) - 1 = 7, \quad \tilde{\phi}(1) = 2 \\
+                \tilde{\phi}'(1) &= 2 \cdot 1 + 2 = 4 \\
+                D_{\tilde{\phi}}(2, 1) &= \tilde{\phi}(2) - \tilde{\phi}(1) - \tilde{\phi}'(1)(2 - 1) \\
+                &= 7 - 2 - 4(1) \\
+                &= 5 - 4 \\
+                &= 1
+            \end{align*}
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+Как видно, добавление аффинного члена не влияет на значение дивергенции. На рисунке~\ref{fig:affinity} синей сплошной линией показана функция $\phi$, прерывистой --- тангенс к ней в точке $c$. Зелёным цветом показана функция $\tilde{\phi}$ и линия тангенса в точке $c$. Тонкие вертикальные закрашенные линии показывают дивергенции в точках $c$ и $x_{i}$. Также на графике показаны не изменившиеся значения дивергенции для соответствующих $x_{i}$.
+
+\paragraph{Выпуклость} $D_\phi(p,q)$ является выпуклой по первому аргументу p, но не обязательно по второму аргументу q~\cite{Nielsen2017}. Это свойство выпуклости очень важно для алгоритмов оптимизации, поскольку оно обеспечивает существование единственного минимума при минимизации расхождения относительно первого аргумента~\cite{Frigyik2008a}. Выпуклость $\phi$ означает, что её вторая производна (гессиан) положительно полу-определена.
+
+Для формального доказательства того, что $D_\phi(x,y)$ выпукла по первому аргументу $x$, на необходимо доказать, что $\forall x_{1}, x_{2} \in \mathbb{R}^{n} \wedge \theta \in [0,1]$ справедливо
+\begin{equation}\label{eq:convexity_01}
+    D_{\phi}(\theta x_{1} + (1 - \theta)x_2, y) \leq \theta D_{\phi}(x_{1}, y) + (1 - \theta)D_{\phi}(x_{2}, y).
+\end{equation}
+\begin{enumerate}
+    \item Выразим $D_{\phi}(\cdot, y)$ как комбинацию $\phi$ и аффинного члена:
+    \begin{equation}
+        D_{\phi}(x,y) = \phi(x) + [\phi(y) + \nabla \phi(y)^{\top}(x - y)].
+    \end{equation}
+    \item Установим, что второй член является аффинной функцией от x:
+    \begin{equation}
+        \phi(y) + \nabla \phi (y)^{\top}(x - y).
+    \end{equation}
+    \item Поскольку $\phi$ является выпуклой,
+    \begin{equation}
+        \phi\left( \theta x_1 + (1 - \theta) x_2 \right) \leq \theta \phi(x_1) + (1 - \theta) \phi(x_2).
+    \end{equation}
+    Данное неравенство является определением выпуклости и служит основой для последующих шагов.
+    \item Комбинируем неравенства
+    \begin{equation}
+        \begin{split}
+            D_{\phi}(\theta x_1 + (1 - \theta) x_2,\, y) &= \phi\left( \theta x_1 + (1 - \theta) x_2 \right) - \phi(y) - \nabla \phi(y)^\top \left( \theta x_1 + (1 - \theta) x_2 - y \right) \\ &\leq \theta \phi(x_1) + (1 - \theta) \phi(x_2) - \phi(y) - \nabla \phi(y)^\top \left( \theta x_1 + (1 - \theta) x_2 - y \right)
+        \end{split}
+    \end{equation}
+    \item Распределим и упростим линейный член
+    \begin{equation}
+        \nabla \phi(y)^\top \left( \theta x_1 + (1 - \theta) x_2 - y \right) = \theta \nabla \phi(y)^\top (x_1 - y) + (1 - \theta) \nabla \phi(y)^\top (x_2 - y)
+    \end{equation}
+    \item Перепишем неравенство, используя разложение
+    \begin{equation}\label{eq:convexity_06}
+        \begin{split}
+            D_{\phi}(\theta x_1 + (1 - \theta) x_2,\, y) &\leq \theta \phi(x_1) + (1 - \theta) \phi(x_2) - \phi(y) \\
+            &\quad - \left[ \theta \nabla \phi(y)^\top (x_1 - y) + (1 - \theta) \nabla \phi(y)^\top (x_2 - y) \right] \\
+            &= \theta \left[ \phi(x_1) - \phi(y) - \nabla \phi(y)^\top (x_1 - y) \right] \\
+            &\quad + (1 - \theta) \left[ \phi(x_2) - \phi(y) - \nabla \phi(y)^\top (x_2 - y) \right] \\
+            &= \theta D_{\phi}(x_1, y) + (1 - \theta) D_{\phi}(x_2, y)
+        \end{split}
+    \end{equation}
+    \item Результат в~\ref{eq:convexity_06} в точности соответствует утверждению в~\ref{eq:convexity_06}. Выпуклость дивергенции Брэгмана по первому аргументу доказана.
+\end{enumerate}
+Для лучшего понимания свойства выпуклости, визуализируем $D_{\phi}(x,c)$ как функцию x при фиксированном c. Для примера, как и прежде рассмотрим следующие вводные:
+\begin{itemize}
+    \item рассматриваемая выпуклая функция: $\phi(x) = x^{2}$;
+    \item её производная: $\phi'(x) = 2x$;
+    \item $c = 1$.
+\end{itemize}
+Рассчитаем дивергенцию Брэгмана:
+\begin{itemize}
+    \item $D_{\phi}(x,c) = \phi(x) - \phi(c) - \phi'(c)(x-c)$;
+    \item $\phi(x) = x^{2}\ \wedge\ c = 1:\ D_{\phi}(1,c) = x^{2} - 1^{2} - 2 \cdot 1 (x - 1) = x^{2} - 1 - 2(x - 1)$;
+    \item упростим: $D_{\phi}(x,1) = x^{2} - 1 - 2x + 2 = x^{2} -2x +1$;
+    \item дальнейшее упрощение: $D_{\phi}(x, 1) = (x - 1)^{2}$.
+\end{itemize}
+Можно сделать вывод, что $D_{\phi}(x, 1)$ представляет собой квадратичную функцию с единственным минимумом в $x = 1$, что означает её выпуклый характер. Рассмотрим рисунок~\ref{fig:convexity_1} на странице~\pageref{fig:convexity_1} на котором показана $D_{\phi}(x, 1) = (x - 1)^{2}$, т.е. Дивергенция Брэгмана как функция от x. Параболическая форма с ветвями, направленными вверх, подтверждает выпуклый характер $D_{\phi}(x,c)$ по x. Минимальное значение $D_{\phi}(x,c)$ возникает при $x = c$, что очевидно приводит к $D_{\phi}(c,c) = 0$. Геометрически, дивергенция Брэгмана является мерой расстояния между x и c в рамках функции $\phi$. Выпуклость гарантирует, что дивергенция не имеет иного локального минимума, отличного от $x = c$.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{convexity_1.pdf} % Adjust width as needed
+    \caption{Выпуклость дивергенции Брэгмана для $\phi(x) = x^{2}$}
+    \label{fig:convexity_1}
+\end{figure}
+
+Для обобщения, рассмотрим ещё один пример:
+\begin{itemize}
+    \item рассматриваемая функция: $\phi(x) = \frac{1}{2}x^{2}$;
+    \item её производная: $\phi'(x) = x$;
+    \item дивергенция Брэгмана: $D_{\phi}(x,c) = \frac{1}{2}x^{2} - \frac{1}{2}c^{2} - c(x-c)$;
+    \item упростим предыдущее выражение: $D_{\phi}(x,c) = \frac{1}{2}x^{2} - \frac{1}{2}c^{2} -cx + c^{2} = \frac{1}{2}x^{2} - cx + \frac{1}{2}c^{2} = \frac{1}{2}(x-c)^{2}$.
+\end{itemize}
+
+Свойство выпуклости для данного примера показано на рисунке~\ref{fig:convexity_2} на странице~\pageref{fig:convexity_2}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{convexity_2.pdf} % Adjust width as needed
+    \caption{Выпуклость дивергенции Брэгмана для $\phi(x) = \frac{1}{2}x^{2}$}
+    \label{fig:convexity_2}
+\end{figure}
+
 \paragraph{Линейность}\label{par:linearity}
 Для любых двух строго выпуклых функций дифференцируемых функций $\phi_{1}$ и $\phi_{1}$ и любых $a,\beta > 0$,
 \begin{equation}
     D_{\alpha \phi_{1} + \beta \phi_{2}}(p,q) = \alpha D_{\phi_{1}} (p,q) + \beta D_{\phi_{2}} (p,q)
 \end{equation}
-Линейность дивергенций Брэгмана позволяет комбинировать несколько дивергенций, порождённых различными функциями~\cite{Reid2013}.
+Линейность дивергенций Брэгмана позволяет комбинировать несколько дивергенций, порождённых различными функциями~\cite{Reid2013}. Дивергенция Брэгмана линейна по отношению к выпуклым комбинациям выпуклых функций, когда коэффициенты неотрицательны и в сумме равны единице (т.е. при образовании выпуклой комбинации). Докажем свойство линейности дивергенции Брэгмана относительно выпуклых комбинаций, т.\,е.: $D_{\phi}(x,y) = \lambda D_{F_{1}}(x,y) + (1 - \lambda)D_{F_{2}}(x,y)$.
+Дано:
+\begin{itemize}
+    \item две строго выпуклые и дифференцируемые функции: $F_{1}, F_{2}:\mathbb{R}^{n} \rightarrow \mathbb{R}$;
+    \item скаляр $\lambda \in [0,1]$;
+    \item определим $\phi(x)$ как выпуклую комбинацию $F_{1}$ и $F_{2}$: $\phi(x) = \lambda F_{1}(x) + (1 - \lambda)F_{2}(x)$;
+    \item Дивергенция: $D_{\phi}(x,y) = \phi(x) - \phi(y) - \nabla \phi(y)^{\top}(x - y)$.
+\end{itemize}
+Доказательство:
+\begin{enumerate}
+    \item рассчитаем $\phi(x)$ и $\phi(y)$:
+    \begin{align*}
+        \phi(x) &= \lambda F_{1}(x) + (1 - \lambda)F_{2}(x)\\
+        \phi(y) &= \lambda F_{1}(y) + (1 - \lambda)F_{2}(y)
+    \end{align*}
+    \item рассчитаем градиент (наклон) $\nabla \phi(y)$: поскольку $\phi (x)$ является выпуклой комбинацией $F_{1}(x)$ и $F_{2}(x)$, её градиент в точке y: $\nabla \phi (y) = \lambda \nabla F_{1}(y) + (1 - \lambda) \nabla F_{2}(y)$;
+    \item выразим дивергенцию Брэгмана $D_{\phi}(x,y)$:
+    \begin{align*}
+        D_{\phi}(x,y) &= \phi(x) - \phi(y) - \nabla \phi(y)^{\top}(x - y) \\
+        &= \left[\lambda F_{1}(x) + (1 - \lambda)F_{2}(x)\right] - \left[\lambda F_{1}(y) + (1 - \lambda)F_{2}(y)\right] \\
+        &- \left[\lambda \nabla F_{1}(y) + (1 - \lambda) \nabla F_{2}(y)\right]^{\top}(x - y)
+    \end{align*}
+    \item упростим выражение:
+    \begin{align*}
+        D_{\phi}(x,y) &= \lambda \left[F_{1}(x) - F_{1}(y) - \nabla F_{1}(y)^{\top}(x - y)\right] \\
+        &+ (1 - \lambda) \left[F_{2}(x) - F_{2}(y) - \nabla F_{2}(y)^{\top}(x-y)\right]
+    \end{align*}
+    выражения внутри квадратных скобок представляют собой дивергенции Брэгмана $D_{F_{1}}(x,y)$ и $D_{F_{2}}(x,y)$ соответственно.
+    \item тогда, в окончательном виде получаем выражение: $D_{\phi}(x,y) = \lambda D_{F_{1}}(x,y) + (1 - \lambda)D_{F_{2}}(x - y)$, что и требовалось доказать.
+\end{enumerate}
+Пояснение и условия:
+\begin{description}
+    \item[Выпуклость комбинации:] условие $\lambda \in [0,1]$ гарантирует, что $\phi(x)$ является выпуклой комбинацией $F_{1}(x)$ и $F_{2}(x)$, тем самым обеспечивая выпуклость $\phi$.
+    \item[Линейность:] дивергенция Брэгмана сохраняет свойство выпуклости данной комбинации благодаря своей линейной зависимости от $\phi$ и градиента $\nabla \phi$.
+    \item[Неотрицательность коэффициентов:] требование $\lambda \geq 0 \wedge (1 - \lambda) \geq 0 \quad \text{i.e.,}\ \lambda \in [0,1]$ гарантирует, что коэффициенты неотрицательны, что необходимо для выпуклости комбинации и свойства линейности.
+\end{description}
+Рассмотрим пример.
+\begin{enumerate}
+    \item определим функции и вычислим их производные:
+    \begin{itemize}
+        \item функция $F_{1}(x)$:
+        \begin{align*}
+            F_{1}(x) &= x^{2} \\
+            \nabla F_{1}(x) &= 2x
+        \end{align*}
+        \item функция $F_{2}(x)$:
+        \begin{align*}
+            F_{2}(x) &= x \ln x - x \quad (\text{for}\ x > 0)\\
+            \nabla F_{2}(x) &= \ln x \quad (\text{for}\ x > 0)
+        \end{align*}
+    \end{itemize}
+    \item произвольно выберем $\lambda$ и $x,y$: пусть $\lambda = 0.5, x = 2, y = 1$
+    \item вариант расчёта №\,1:
+    \begin{itemize}
+        \item рассчитаем $D_{F_{1}}(x,y)$:
+        \begin{align*}
+            D_{F_{1}}(2,1) &= F_{1}2 - F_{1}(1) - \nabla F_{1}(1)(2 - 1) \\
+            &= 4 - 1 - 2\cdot(1) \\
+            &= 4 - 1 - 2 = 1
+        \end{align*}
+        \item рассчитаем $D_{F_{2}}(x,y)$:
+        \begin{align*}
+            D_{F_{2}}(2,1) &= F_{2}2 - F_{2}1 - \nabla F_{2}(1)(2 - 1) \\
+            &= [2\ln 2 - 2] - [1\ln 1 -1] - [\ln 1](2 - 1) \\
+            &= (2\ln 2 - 2) - (-1) - 0 \cdot 1 \\
+            &= (2\ln 2 - 2) + 1\\
+            &= 2\ln 2 -1
+        \end{align*}
+        \item рассчитаем $D_{\phi}(x,y)$, где $\phi(x) = 0.5F_{1}(x) + 0.5F_{2}(x)$:
+        \begin{align*}
+            D_{\phi}(2,1) = 0.5D_{F_{1}}(2,1) + 0.5D_{F_{2}}(2,1) = 0.5 \times 1 + 0.5 \times (2\ln 2 - 1) = 0.5 + (\ln 2 - 0.5)
+        \end{align*}
+        \item упростим и получим итоговое значение: $D_{\phi}(2,1) = \ln 2$.
+    \end{itemize}
+    \item вариант расчёта №\,2:
+    \begin{itemize}
+            \item рассчитаем $\phi(x)$ и $\phi(y)$:
+        \begin{align*}
+            \phi(2) &= 0.5 \times 4 + 0.5 \times (2\ln2 - 2) = 2 + (\ln2 - 1) = \ln2 +1 \\
+            \phi(1) &= 0.5 \times 1 + + 0.5 \times (1\ln1 -1) = 0.5 + (-0.5) = 0
+        \end{align*}
+        \item рассчитаем $\nabla \phi(y)$:
+        \begin{align*}
+            \nabla \phi(1) = 0.5 \nabla F_{1}(1) + 0.5 \nabla F_{2}(1) = 0.5 \times 2 \times 1 + 0.5 \times \ln 1  = 1 + 0 = 1
+        \end{align*}
+        \item рассчитаем $D_{\phi}(2,1)$:
+        \begin{align*}
+            D_{\phi} = \phi(2) - \phi(1) - \nabla \phi(1)(2 - 1) = (\ln 2 + 1) - 0 - 1 \times 1 = \ln 2 + 1 - 1 = \ln 2
+        \end{align*}
+    \end{itemize}
+\end{enumerate}
+Для наглядности визуализируем данное свойство. Рассмотрим следующие вводные:
+\begin{enumerate}
+    \item Функция $F_{1}(x)$:
+    \begin{itemize}
+        \item $F_{1}(x) = x^{2}$
+        \item $\nabla F_{1}(x) = 2x$
+    \end{itemize}
+    \item Функция $F_{2}(x)$:
+    \begin{itemize}
+        \item $F_{2}(x) = x \ln x - x \quad for\ x > 0$
+        \item $\nabla F_{2}(x) = \ln x \quad for\ x > 0$
+    \end{itemize}
+    \item Произвольно выберем значения параметров:
+    \begin{itemize}
+        \item коэффициент выпуклости комбинации: $\lambda = 0.5$
+        \item фиксированная точка: $y = 1$
+        \item поскольку $F_{2}x$ определена для $x > 0$, рассмотрим $x \in [0.1,3]$
+    \end{itemize}
+\end{enumerate}
+Рассчитаем дивергенции $D_{F_{1}}(x,y),\ D_{F_{1}}(x,y),\ D_{\phi}(x,y)$.
+\begin{enumerate}
+    \item рассчитаем $D_{F_{1}}(x,y)$:
+    \begin{align*}
+        D_{F_{1}} &= F_{1}(x) - F_{1}(y) \nabla F_{1}(y)(x - y)\\
+        \text{for } F_{1}(x) &= x^{2} \wedge \nabla F_{1}(y) = 2y = 2:\\
+        D_{F_{1}}(x,1) &= x^{2} - 1^2 - 2(x - 1) = x^2 - 1 - 2x + 2 = (x - 1)^{2}
+    \end{align*}
+    \item рассчитаем $D_{F_{2}}(x,y)$:
+    \begin{align*}
+        D_{F_{2}} &= F_{2}(x) - F_{2}(y) \nabla F_{2}(y)(x - y)\\
+        \text{for } F_{2}(x) &= x \ln x - x \wedge \nabla F_{2}(y) = \ln y = 0\quad \text{(since )} y = 1:\\
+        D_{F_{2}}(x,1) &= (x \ln x - x) - (1\ln 1 - 1) - 0 \cdot (x - 1) = x \ln x - x + 1
+    \end{align*}
+    \item рассчитаем $D_\phi(x,y)$
+    \begin{align*}
+        \text{since } \phi(x) &= 0.5F_{1}(x) + 0.5F_{2}(x):\ D_\phi(x,y) = \phi(x) -\phi(y) - \nabla \phi(y)(x - y)\\
+        \phi(x) &= 0.5x^{2} + 0.5(x \ln x - x)\\
+        \phi(1) &= 0.5 \cdot 1^{2} + 0.5(1 \ln 1 - 1) = 0.5 - 0.5 = 0\\
+        \nabla \phi (y) &= 0.5 \nabla F_{1}(y) + 0.5 \nabla F_{2}(y) = 0.5 \cdot 2 \cdot 1 + 0.5-0 = 1\\
+        D_\phi(x,1) &= \phi(x) - 0 - 1 \cdot (x - 1) = \phi(x) - x + 1
+    \end{align*}
+\end{enumerate}
+Рассмотрим рисунок~\ref{fig:linearity} на странице~\pageref{fig:linearity}. $D_{\phi}(x,y)$ показана сплошной синей кривой. $\lambda D_{F_{1}}(x,y) + (1 - \lambda)D_{F_{2}}(x,y)$ показана красной пунктирной кривой. Как видно, обе кривые идеально совпадают, что означает справедливость утверждения $D_{\phi}(x,y) = \lambda D_{F_{1}}(x,y) + (1 - \lambda)D_{F_{2}}(x,y)$, т.\,е. подтверждает свойство линейности.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{linearity.pdf} % Adjust width as needed
+    \caption{Линейность дивергенции Брэгмана для комбинации $F_{1}(x) = x^{2}$ и $F_{2}(x) = x \ln x - x \quad for\ x > 0$}
+    \label{fig:linearity}
+\end{figure}
+
 \paragraph{Двойственность}\label{par:duality}
 Для любой строго выпуклой и дифференцируемой функции $\phi$ и её выпуклой сопряжённой $\phi^{*}$
 \begin{equation}
-    D_{\phi}(p,q) = D_{\phi^{*}}(\triangledown \phi(q), \triangledown \phi(p))
+    D_{\phi}(p,q) = D_{\phi^{*}}(\nabla \phi(q), \nabla \phi(p))
 \end{equation}
 Дивергенция Брегмана имеет двойственную связь со своей выпуклой сопряжённой, соединяя дивергенцию в начальном пространстве с соответствующей дивергенцией в двойственном пространстве~\cite{Nielsen2019}.
+
+\subparagraph{Выпуклая сопряжённая}
+
+Выпуклая сопряжённая, также известная как преобразование Лежандра\,--\,Фенхеля~\cite{Touchette2005}, функции $F: \mathbb{R}^{n} \rightarrow \mathbb{R} \cup {+\infty}$ представляет собой функцию $F^{*}: \mathbb{R}^{n} \rightarrow \cup {+\infty}$, определяемую как:
+\begin{equation}
+    F^{*}(\theta) = \sup_{x \in \operatorname{dom} F} \left\{ \theta^\top x - F(x) \right\},
+\end{equation}
+где: $\theta$ --- двойственная переменная в $\mathbb{R}^{n}$; $\operatorname{dom}\ F$ --- область определения $F$, множество, где $F$ ограничено.
+
+Интерпретация:
+\begin{itemize}
+    \item выпуклая сопряжённая $F^{*}(\theta)$ представляет собой максимальной значение линейной функции $\theta^{\top}(x)$ минус $F(x)$;
+    \item она преобразует исходную функцию $F$ в функцию в двойственном пространстве.
+\end{itemize}
+Свойства:
+\begin{description}
+    \item[выпуклость:] если функция $F$ выпукла, то $F^{*}$ также является выпуклой;
+    \item[строгая выпуклость:] если функция $F$ строго выпукла и дифференцируема, тогда $F^{*}$ также строго выпукла в своей области определения;
+    \item[дифференцируемость:] если $F$ строго выпукла и непрерывно дифференцируема, тогда $F^{*}$ также непрерывно дифференцируема в своей области определения $\Omega^{*}$ в топологическом пространстве;
+    \item[двойная двойственность:] выпуклой сопряжённой $F^{*}$ является сама изначальная функция $F$, т.\,е. $F^{**} = F$, которая в этом случае является нижней полу-непрерывной и выпуклой.
+\end{description}
+Область $\omega^{*}$:
+\begin{itemize}
+    \item $\theta$ --- это множество $\theta$, для которого $F^{*}(\theta)$ конечна;
+    \item определяется градиентами $F$.
+\end{itemize}
+\subparagraph{Связь между $F$ и $F^{*}$}
+
+
+
 \paragraph{Среднее как минимизатор}\label{par:mean_as_minimizer}
 Для любой $q \in S$ и любого случайного вектора $X$, принимающего значения в $S$:
 \begin{equation}
@@ -324,9 +846,20 @@
 и является ограниченной и компактной, если множество $S$ закрытое~\cite{Nielsen2007}. Это свойство гарантирует, что множество точек, находящихся в пределах определённого расхождения Брегмана от заданного центра~\cite{Nielsen2011}, является хорошо управляемым~\cite{Nielsen2006}, что облегчает анализ и оптимизацию в пределах этого множества~\cite{Boissonnat2010}.
 \paragraph{Теорема косинусов}\label{par:cosine_rule}
 \begin{equation}
-    \forall p,q,z \in S,\ D_{\phi}(p,z) = D_{\phi}(q,z) - \langle \triangledown \phi (z) - \triangledown \phi (q), p -q \rangle
+    \forall p,q,z \in S,\ D_{\phi}(p,z) = D_{\phi}(q,z) - \langle \nabla \phi (z) - \nabla \phi (q), p -q \rangle
 \end{equation}
 Дивергенция Брэгмана удовлетворяет обобщённому правилу косинусов, связывая дивергенции между тремя точками способом, напоминающим классический закон косинусов в евклидовой геометрии~\cite{Adamcik2014}.
+
+\subsection{Дважды стохастические матрицы}
+\subsection{Метод балансировки матриц Брэгмана}
+\subsection{Алгоритм Синхорна-Кноппа}
+\subsection{Пример}
+
+Bar Charts/Heatmaps: Use these to visualize the initial and balanced matrices, highlighting the changes in building and land values.
+Convergence Plots: Show how the row and column scaling factors converge over iterations, demonstrating the algorithm's effectiveness.
+Scatter Plots: If applicable, plot the initial and balanced values against other variables (e.g., property size, location) to visualize the impact of balancing on value distribution.
+
+\subsection{Области применения}
 
 \section{Практическое применение}\label{sec:Case}
 
